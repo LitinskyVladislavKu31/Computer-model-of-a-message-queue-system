@@ -84,10 +84,6 @@ TOPOLOGY_CONFIG = {
 }
 
 def validate_topology(topo_name: str, workers_count: int) -> tuple[bool, str]:
-    """
-    Перевіряє коректність кількості воркерів для обраної топології.
-    Повертає кортеж (is_valid, message).
-    """
     cfg = TOPOLOGY_CONFIG.get(topo_name)
     if not cfg:
         return False, f"Топологія '{topo_name}' не знайдена в конфігурації."
