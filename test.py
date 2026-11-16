@@ -6,7 +6,6 @@ def run_test(num_messages, num_workers=10, intensity=25.0, loss_percent=85.0, d_
     print(f"\n--- Запуск тесту: {num_messages} повідомлень ---")
     print(f"Стратегія: {d_strat}, Черга: {q_strat}, Втрати: {loss_percent}%")
 
-    # Передаємо loss_percent усім воркерам
     workers = [Worker(i+1, 
                       100 if i == num_workers-1 else 200, 
                       0.5 if i == num_workers-1 else 0.05, 
