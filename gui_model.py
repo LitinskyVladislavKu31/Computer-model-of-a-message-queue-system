@@ -29,7 +29,6 @@ class DiplomaApp:
         self.root.columnconfigure(1, weight=1)
         self.root.columnconfigure(2, weight=2)
 
-        # 1. Ліва колонка: Параметри
         ctrl = ttk.LabelFrame(self.root, text="Параметри")
         ctrl.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
         
@@ -43,7 +42,6 @@ class DiplomaApp:
             if lbl == "Кількість воркерів:":
                 e.bind("<KeyRelease>", self.on_topology_change)
 
-        # Лейбл для виведення помилок / підказок топології
         self.topo_hint_lbl = ttk.Label(ctrl, text="", font=("Arial", 8), wraplength=260, justify="left")
         self.topo_hint_lbl.pack(anchor='w', padx=10, pady=(3, 0))
 
@@ -71,13 +69,11 @@ class DiplomaApp:
         self.pause_btn = ttk.Button(ctrl, text="⏸ ПАУЗА", command=self.toggle_pause, state="disabled")
         self.pause_btn.pack(pady=(0, 20), fill='x', padx=10)
 
-        # 2. Середня колонка: Лог подій
         log_fr = ttk.LabelFrame(self.root, text="Лог подій")
         log_fr.grid(row=0, column=1, sticky="nsew", padx=(0, 10), pady=10)
         self.log_area = scrolledtext.ScrolledText(log_fr, font=("Consolas", 9))
         self.log_area.pack(fill='both', expand=True, padx=5, pady=5)
 
-        # 3. Права колонка: Мережа та Аналіз
         right = tk.Frame(self.root)
         right.grid(row=0, column=2, sticky="nsew", padx=(0, 10), pady=10)
         right.rowconfigure(0, weight=1)
@@ -149,7 +145,6 @@ class DiplomaApp:
         
         bx, by = (cx, 30) if topo in ["Tree (Дерево)", "Hypercube (Гіперкуб)"] else (cx, cy)
         
-        # Додаємо Mesh до списку топологій, де брокер інтегрується у перший вузол
         merged_broker_topos = ["Hypercube (Гіперкуб)", "Tree (Дерево)", "Star (Зірка)", "Mesh (Повнозв'язна)"]
         
         if topo not in merged_broker_topos:
@@ -197,7 +192,6 @@ class DiplomaApp:
                 wy = grid_cy + (dy + dz_y) * w_scale
             
             else:
-                # Центруємо W1 для Зірки та Mesh, інші вузли формують кільце навколо
                 if topo in ["Star (Зірка)", "Mesh (Повнозв'язна)"] and i == 1:
                     wx, wy = cx, cy
                 else:
@@ -249,7 +243,6 @@ class DiplomaApp:
                     self.canvas.create_line(self.coords['B'][0], self.coords['B'][1], wx, wy, fill="lightgray", width=2, tags=f"link_B_{i}")
                 
                 if "Mesh" in topo:
-                    # Починаємо з 2, щоб не дублювати лінію link_B_i (зв'язок із центральним W1)
                     for j in range(2, i): 
                         self.canvas.create_line(self.coords[j][0], self.coords[j][1], wx, wy, fill="lightgray", dash=(2,2), tags=f"mesh_{j}_{i}")
         
@@ -258,7 +251,6 @@ class DiplomaApp:
     def highlight_path(self, w_id):
         for line in self.active_lines: 
             tags = self.canvas.gettags(line)
-            # Коректно відновлюємо дизайн ліній: пунктир для побічних зв'язків Mesh, суцільні для інших
             if any(t.startswith("mesh_") for t in tags):
                 self.canvas.itemconfig(line, fill="lightgray", width=1, dash=(2,2))
             else:
@@ -299,10 +291,8 @@ class DiplomaApp:
             if w_id == 1:
                 tags = []
             else:
-                # Імітація багатокрокової (multi-hop) маршрутизації для динамічного ефекту сітки
                 import random
                 node_count = len([k for k in self.coords.keys() if isinstance(k, int)])
-                # З імовірністю 50% направляємо пакет через транзитний вузол
                 if node_count > 2 and random.choice([True, False]):
                     available = [x for x in range(2, node_count + 1) if x != w_id]
                     if available:
